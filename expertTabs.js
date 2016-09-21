@@ -48,7 +48,7 @@ function createStudentQuestionsFromDom(){
 //will probably put this in a function that returns the observer
 var chatNodeObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
-    if(mutation.addedNodes[0].className === 'fc--question-node'){
+    if(mutation.addedNodes[0] && mutation.addedNodes[0].className === 'fc--question-node'){
       reloadOrCreateStudentQuestion(mutation.addedNodes[0]);
     }
   });    
@@ -75,9 +75,40 @@ function reloadOrCreateStudentQuestion(chatNode){
   }
 }
 
+// Tabs
+function createTabBar(){
+  let rightChat = document.querySelector('.util--anchor__frame > div'); // grab right window
+  let tabBar = document.createElement("div"); //creates tab bar
+  tabBar.id = "chat-tab-bar";
+  rightChat.insertBefore(tabBar, rightChat.firstChild);
+  return tabBar;
+}
+
+function createTab(studentQuestion){
+  let chatTab = '<div class="chat-tab" id="chat_' + studentQuestion.chatId +'_tab">'+ studentQuestion.studentName();
+  chatTab += ' <span class="close-tab">X</span></div>';
+  document.querySelector('#chat-tab-bar').innerHTML += chatTab; 
+}
+
+function findStudentQuestionByChatId(chatId){
+  var studentQuestionMatch;
+  allStudentQuestions.forEach(function(studentQuestion){
+    if (studentQuestion.chatId === chatId){
+      studentQuestionMatch = studentQuestion;
+    }
+  })
+  return studentQuestionMatch;
+}
+
 // Event Listeners
 
-createStudentQuestionsFromDom()
+function trackStudent(){
+
+}
+
+// To Run
+
+createStudentQuestionsFromDom();
 var foo = document.querySelector('.list--last-child-border');
 var config = { attributes: true, childList: true, characterData: true };
 chatNodeObserver.observe(foo, config);
@@ -119,7 +150,7 @@ var tabBar = document.createElement("div"); //creates tab bar
 
 tabBar.id = "chat-tab-bar";
 
-tabBar.innerHTML += '<div class="chat-tab" id="chat_1">Student Name - 2 <span>X</span></div>'; //creates tabs Html
+tabBar.innerHTML += '<div class="chat-tab" id="chat_1_tab">Student Name - 2 <span class="close-tab">X</span></div>'; //creates tabs Html
 
 rightChat.insertBefore(tabBar, rightChat.firstChild); //adds Tabs
 
