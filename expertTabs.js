@@ -11,8 +11,8 @@ class StudentQuestion{
 
 
 
-  addTrackButton(){ //This function should take the argument of a button instead of hardcode
-    this.chatNode.querySelector('.media-block__media').innerHTML += '<div class="tracker" data-chatId="'+ this.chatId +'">Track</div>'
+  addTrackerElement(trackerElement){ 
+    this.chatNode.querySelector('.media-block__media').innerHTML += trackerElement
   }
 
   checkUnresponded(){
@@ -25,11 +25,15 @@ class StudentQuestion{
 var chatId = 0;
 var allStudentQuestions = [];
 
+function createTrackerElement(chatId){
+  return '<div class="tracker" data-chatId="'+ chatId +'">Track</div>'
+}
+
 
 function createStudentQuestion(node){
   let newStudentQuestion = new StudentQuestion(node, chatId);
   chatId++;
-  newStudentQuestion.addTrackButton();
+  newStudentQuestion.addTrackButton(createTrackerElement(this.chatId));
 }
 
 function createStudentQuestionsFromDom(){
@@ -39,7 +43,7 @@ function createStudentQuestionsFromDom(){
   });
 }
 
-
+//will probably put this in a function that returns the observer
 var chatNodeObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if(mutation.addedNodes[0]){
@@ -47,6 +51,11 @@ var chatNodeObserver = new MutationObserver(function(mutations) {
     }
   });    
 });
+
+function reloadTracker(chatNode, studentQuestion){
+  let trackerElement = createTrackerElement(studentQuestion.chatId);
+  chatNode.querySelector('.media-block__media').innerHTML += trackerElement;
+}
 
 // Event Listeners
   
