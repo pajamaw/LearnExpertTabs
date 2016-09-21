@@ -49,8 +49,9 @@ function createStudentQuestionsFromDom(){
 // remove event listeners when nodes are removed
 var chatNodeObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
-    if(mutation.addedNodes[0] && mutation.addedNodes[0].className === 'fc--question-node'){
+    if(mutation.addedNodes[0] && mutation.addedNodes[0].classList[0] === 'fc--question-node'){
       reloadOrCreateStudentQuestion(mutation.addedNodes[0]);
+      attachTrackStudentListeners();
     }
   });    
 });
