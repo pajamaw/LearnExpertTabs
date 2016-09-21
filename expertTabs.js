@@ -51,9 +51,9 @@ var chatNodeObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if(mutation.addedNodes[0] && mutation.addedNodes[0].classList[0] === 'fc--question-node'){
       reloadOrCreateStudentQuestion(mutation.addedNodes[0]);
-      attachTrackStudentListeners();
     }
-  });    
+  }); 
+  attachTrackStudentListeners();   
 });
 
 function reloadTracker(chatNode, studentQuestion){
