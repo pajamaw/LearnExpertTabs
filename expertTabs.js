@@ -1,3 +1,29 @@
+class StudentQuestion{
+  constructor(chatNode, chatId){
+    this.chatNode = chatNode;
+    this.chatId = chatId++;
+  }
+
+  studentName(){
+    return this.chatNode.querySelector('.heading--level-4').textContent
+  }
+
+  addTrackButton(){ //This function should take the argument of a button instead of hardcode
+    return this.chatNode.querySelector('.media-block__media').innerHtml += '<div>Track Me</div>'
+  }
+
+  checkUnresponded(){
+    if (this.chatNode.querySelector('image-frame__badge--color-blue')){
+      return this.chatNode.querySelector('image-frame__badge--color-blue').textContent
+    }  
+  }
+
+
+}
+
+
+
+
 // Every Student should have a "Track Chat" buttton added to the sidebar
 // On click of that button, a tab will open up over the full chat
 // The track button will change to "untrack" which will remove that chat from tab bar
