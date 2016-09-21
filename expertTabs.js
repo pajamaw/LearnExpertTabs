@@ -9,6 +9,8 @@ class StudentQuestion{
     return this.chatNode.querySelector('.heading--level-4').textContent
   }
 
+
+
   addTrackButton(){ //This function should take the argument of a button instead of hardcode
     this.chatNode.querySelector('.media-block__media').innerHTML += '<div class="tracker" data-chatId="'+ this.chatId +'">Track</div>'
   }
@@ -38,6 +40,14 @@ function createStudentQuestionsFromDom(){
 }
 
 
+var chatNodeObserver = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+    if(mutation.addedNodes[0]){
+      console.log(mutation.addedNodes[0]);
+    }
+  });    
+});
+
 // Event Listeners
   
 
@@ -57,6 +67,8 @@ function createStudentQuestionsFromDom(){
 
 
 var chatNodes = document.querySelectorAll('.fc--question-node'); //grabs all questions from side
+
+var fullQuestionList = document.querySelector('.fc--questions-list'); //give dom element of all the questions
 
 chatNodes.forEach(function(chat){
   chat.querySelector()
