@@ -45,7 +45,8 @@ function createStudentQuestionsFromDom(){
   });
 }
 
-//will probably put this in a function that returns the observer
+// will probably put this in a function that returns the observer
+// remove event listeners when nodes are removed
 var chatNodeObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if(mutation.addedNodes[0] && mutation.addedNodes[0].className === 'fc--question-node'){
@@ -102,8 +103,23 @@ function findStudentQuestionByChatId(chatId){
 
 // Event Listeners
 
-function trackStudent(){
+function addTrackStudentListeners(){
+  allStudentQuestions.forEach(function(studentQuestion){
+    trackStudent(studentQuestion.chatNode);
+  });
+}
 
+function trackStudent(studentNode){
+ studentNode.querySelector('.tracker').addEventListener('click', function(e){
+  let chatId = parseInt(e.srcElement.dataset.chatid);
+  let studentQuestionReturn = findStudentQuestionByChatId(chatId);
+  if (!document.querySelector('#chat-tab-bar')){
+    createTabBar();
+    createTab(studentQuestionReturn);
+  } else {
+    createTab(studentQuestionReturn);
+  }
+ });
 }
 
 // To Run
@@ -112,6 +128,7 @@ createStudentQuestionsFromDom();
 var foo = document.querySelector('.list--last-child-border');
 var config = { attributes: true, childList: true, characterData: true };
 chatNodeObserver.observe(foo, config);
+addTrackStudentListeners()
 
 
 // Every Student should have a "Track Chat" buttton added to the sidebar
