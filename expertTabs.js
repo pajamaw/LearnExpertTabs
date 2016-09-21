@@ -19,6 +19,21 @@ class StudentQuestion{
   }
 }
 
+var chatId = 0;
+
+
+function createStudentQuestion(node){
+  let newStudentQuestion = new StudentQuestion(node, chatId);
+  newStudentQuestion.addTrackButton();
+}
+
+function createStudentQuestionsFromDom(){
+  var chatNodes = document.querySelectorAll('.fc--question-node');
+  chatNodes.forEach(function(node){
+    createStudentQuestion(node);
+  });
+}
+
 
 // Event Listeners
   
