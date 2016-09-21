@@ -9,7 +9,7 @@ class StudentQuestion{
   }
 
   addTrackButton(){ //This function should take the argument of a button instead of hardcode
-    return this.chatNode.querySelector('.media-block__media').innerHtml += '<div>Track Me</div>'
+    return this.chatNode.querySelector('.media-block__media').innerHtml += '<div class="tracker" data-chatId="'+ this.chatId +'">Track Me</div>'
   }
 
   checkUnresponded(){
@@ -17,11 +17,11 @@ class StudentQuestion{
       return this.chatNode.querySelector('image-frame__badge--color-blue').textContent
     }  
   }
-
-
 }
 
 
+// Event Listeners
+  
 
 
 // Every Student should have a "Track Chat" buttton added to the sidebar
