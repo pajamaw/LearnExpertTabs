@@ -78,17 +78,18 @@ function reloadOrCreateStudentQuestion(chatNode){
 
 // Tabs
 function createTabBar(){
-  let rightChat = document.querySelector('.util--anchor__frame > div'); // grab right window
-  let tabBar = document.createElement("div"); //creates tab bar
+  let rightChat = document.querySelector('.util--anchor__frame > div'); 
+  let tabBar = document.createElement("div");
   tabBar.id = "chat-tab-bar";
   rightChat.insertBefore(tabBar, rightChat.firstChild);
   return tabBar;
 }
 
 function createTab(studentQuestion){
-  let chatTab = '<div class="chat-tab" id="chat_' + studentQuestion.chatId +'_tab">'+ studentQuestion.studentName();
+  let chatTab = '<div class="chat-tab" id="chat_' + studentQuestion.chatId +'_tab" data-chatId="' + studentQuestion.chatId +'">'+ studentQuestion.studentName();
   chatTab += ' <span class="close-tab">X</span></div>';
-  document.querySelector('#chat-tab-bar').innerHTML += chatTab; 
+  document.querySelector('#chat-tab-bar').innerHTML += chatTab;
+  attachTabListener(document.querySelectorAll('#chat-tab-bar > .chat-tab'));
 }
 
 function findStudentQuestionByChatId(chatId){
@@ -103,7 +104,28 @@ function findStudentQuestionByChatId(chatId){
 
 // Event Listeners
 
-function addTrackStudentListeners(){
+function attachTabListener(tabs){
+  tabs.forEach(function(tab){
+    tabClick(tab);
+    closeTab(tab);
+  });
+}
+
+function closeTab(tab){
+  tab.querySelector('.close-tab').addEventListener('click', function(e){
+    tab.parentNode.removeChild(tab);
+  })
+}
+
+function tabClick(tab){
+  tab.addEventListener('click', function(e){
+    let chatId = parseInt(e.srcElement.dataset.chatid);
+    let foundStudentQuestion = findStudentQuestionByChatId(chatId);
+    foundStudentQuestion.chatNode.click();
+  });
+}
+
+function attachTrackStudentListeners(){
   allStudentQuestions.forEach(function(studentQuestion){
     trackStudent(studentQuestion.chatNode);
   });
@@ -128,7 +150,7 @@ createStudentQuestionsFromDom();
 var foo = document.querySelector('.list--last-child-border');
 var config = { attributes: true, childList: true, characterData: true };
 chatNodeObserver.observe(foo, config);
-addTrackStudentListeners()
+attachTrackStudentListeners();
 
 
 // Every Student should have a "Track Chat" buttton added to the sidebar
