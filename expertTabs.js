@@ -9,7 +9,9 @@ class StudentQuestion{
     return this.chatNode.querySelector('.heading--level-4').textContent
   }
 
-
+  question(){
+    return this.chatNode.querySelector('.util--break-word').textContent
+  }
 
   addTrackerElement(trackerElement){ 
     this.chatNode.querySelector('.media-block__media').innerHTML += trackerElement
@@ -30,24 +32,24 @@ function createTrackerElement(chatId){
 }
 
 
-function createStudentQuestion(node){
-  let newStudentQuestion = new StudentQuestion(node, chatId);
+function createStudentQuestion(chatNode){
+  let newStudentQuestion = new StudentQuestion(chatNode, chatId);
   chatId++;
-  newStudentQuestion.addTrackButton(createTrackerElement(this.chatId));
+  newStudentQuestion.addTrackerElement(createTrackerElement(newStudentQuestion.chatId));
 }
 
 function createStudentQuestionsFromDom(){
   var chatNodes = document.querySelectorAll('.fc--question-node');
-  chatNodes.forEach(function(node){
-    createStudentQuestion(node);
+  chatNodes.forEach(function(chatNode){
+    createStudentQuestion(chatNode);
   });
 }
 
 //will probably put this in a function that returns the observer
 var chatNodeObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
-    if(mutation.addedNodes[0]){
-      console.log(mutation.addedNodes[0]);
+    if(mutation.addedNodes[0].className === 'fc--question-node'){
+      reloadOrCreateStudentQuestion(mutation.addedNodes[0]);
     }
   });    
 });
@@ -55,10 +57,30 @@ var chatNodeObserver = new MutationObserver(function(mutations) {
 function reloadTracker(chatNode, studentQuestion){
   let trackerElement = createTrackerElement(studentQuestion.chatId);
   chatNode.querySelector('.media-block__media').innerHTML += trackerElement;
+  studentQuestion.chatNode = chatNode;
+}
+
+function reloadOrCreateStudentQuestion(chatNode){
+  let question = chatNode.querySelector('.util--break-word').textContent;
+  let student = chatNode.querySelector('.heading--level-4').textContent;
+  let found = false;
+  allStudentQuestions.forEach(function(studentQuestion){
+    if (!found && studentQuestion.studentName() === student && studentQuestion.question() === question){
+      reloadTracker(chatNode, studentQuestion);
+      found = !found;
+    }
+  });
+  if (!found){
+    createStudentQuestion(chatNode);
+  }
 }
 
 // Event Listeners
-  
+
+createStudentQuestionsFromDom()
+var foo = document.querySelector('.list--last-child-border');
+var config = { attributes: true, childList: true, characterData: true };
+chatNodeObserver.observe(foo, config);
 
 
 // Every Student should have a "Track Chat" buttton added to the sidebar
