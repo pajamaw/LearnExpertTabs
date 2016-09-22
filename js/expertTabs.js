@@ -2,6 +2,7 @@ class StudentQuestion{
   constructor(chatNode, chatId){
     this.chatNode = chatNode;
     this.chatId = chatId;
+    this.unresponded = !!chatNode.querySelector('.image-frame__badge')
     allStudentQuestions.push(this);
   }
 
@@ -14,7 +15,7 @@ class StudentQuestion{
   }
 
   addTrackerElement(trackerElement){ 
-    this.chatNode.querySelector('.media-block__media').innerHTML += trackerElement
+    this.chatNode.querySelector('.media-block__content').innerHTML += trackerElement
   }
 
   checkUnresponded(){
@@ -55,9 +56,23 @@ var chatNodeObserver = new MutationObserver(function(mutations) {
   });    
 });
 
+// This observer needs to be set when nodes are added/removed
+
+var unrespondedObserver = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+    if(mutation.addedNodes[0] || mutation.removedNodes[0]){
+      console.log(mutation)
+    }
+  });    
+});
+
+// When the unresponded observer triggers, check for matching tab.
+// If matching tab exists, change it's unresponded status
+// When a tab is created, check it's unresponded status
+
 function reloadTracker(chatNode, studentQuestion){
   let trackerElement = createTrackerElement(studentQuestion.chatId);
-  chatNode.querySelector('.media-block__media').innerHTML += trackerElement;
+  chatNode.querySelector('.media-block__content').innerHTML += trackerElement;
   studentQuestion.chatNode = chatNode;
   trackStudent(studentQuestion.chatNode);
 }
@@ -103,6 +118,10 @@ function findStudentQuestionByChatId(chatId){
   })
   return studentQuestionMatch;
 }
+
+function toggleUnresponded(tab){
+  tab.classList.toggle('unresponded')
+} 
 
 // Event Listeners
 
@@ -194,6 +213,12 @@ tabBar.id = "chat-tab-bar";
 tabBar.innerHTML += '<div class="chat-tab" id="chat_1_tab">Student Name - 2 <span class="close-tab">X</span></div>'; //creates tabs Html
 
 rightChat.insertBefore(tabBar, rightChat.firstChild); //adds Tabs
+
+chatNodes.forEach(function(chatNode){
+ foo = chatNode.querySelector('.image-frame--fixed-size-large');
+ config = { attributes: true, childList: true, characterData: true };
+ unrespondedObserver.observe(foo,config)
+})
 
 
 

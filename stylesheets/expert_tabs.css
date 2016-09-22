@@ -9,3 +9,12 @@
 #chat-tab-bar {
   overflow: hidden;
 }
+
+.tracker {
+  border: 1px solid white;
+  background-color: white;
+  text-align: center;
+  color: blue;
+  padding: 1px;
+  font-size: 70%;
+}
