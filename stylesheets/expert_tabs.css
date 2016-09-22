@@ -1,0 +1,11 @@
+.chat-tab {
+  float: left;
+  background-color: gray;
+  padding: 3px;
+  color: whitesmoke;
+  border: 1px solid white;
+}
+
+#chat-tab-bar {
+  overflow: hidden;
+}

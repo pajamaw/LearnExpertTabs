@@ -52,14 +52,14 @@ var chatNodeObserver = new MutationObserver(function(mutations) {
     if(mutation.addedNodes[0] && mutation.addedNodes[0].classList[0] === 'fc--question-node'){
       reloadOrCreateStudentQuestion(mutation.addedNodes[0]);
     }
-  }); 
-  attachTrackStudentListeners();   
+  });    
 });
 
 function reloadTracker(chatNode, studentQuestion){
   let trackerElement = createTrackerElement(studentQuestion.chatId);
   chatNode.querySelector('.media-block__media').innerHTML += trackerElement;
   studentQuestion.chatNode = chatNode;
+  trackStudent(studentQuestion.chatNode);
 }
 
 function reloadOrCreateStudentQuestion(chatNode){
@@ -74,6 +74,7 @@ function reloadOrCreateStudentQuestion(chatNode){
   });
   if (!found){
     createStudentQuestion(chatNode);
+    trackStudent(studentQuestion.chatNode);
   }
 }
 
