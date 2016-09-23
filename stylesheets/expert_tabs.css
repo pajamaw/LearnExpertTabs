@@ -6,6 +6,10 @@
   border: 1px solid white;
 }
 
+.chat-tab.unresponded {
+  background-color: lightskyblue;
+}
+
 #chat-tab-bar {
   overflow: hidden;
 }

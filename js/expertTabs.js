@@ -18,11 +18,11 @@ class StudentQuestion{
     this.chatNode.querySelector('.media-block__content').innerHTML += trackerElement
   }
 
-  checkUnresponded(){
-    if (this.chatNode.querySelector('image-frame__badge--color-blue')){
-      return this.chatNode.querySelector('image-frame__badge--color-blue').textContent
-    }  
-  }
+  // checkUnresponded(){
+  //   if (this.chatNode.querySelector('image-frame__badge--color-blue')){
+  //     return this.chatNode.querySelector('image-frame__badge--color-blue').textContent
+  //   }  
+  // }
 }
 
 var chatId = 0;
@@ -37,6 +37,7 @@ function createStudentQuestion(chatNode){
   let newStudentQuestion = new StudentQuestion(chatNode, chatId);
   chatId++;
   newStudentQuestion.addTrackerElement(createTrackerElement(newStudentQuestion.chatId));
+  return newStudentQuestion;
 }
 
 function createStudentQuestionsFromDom(){
@@ -51,7 +52,8 @@ function createStudentQuestionsFromDom(){
 var chatNodeObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if(mutation.addedNodes[0] && mutation.addedNodes[0].classList[0] === 'fc--question-node'){
-      reloadOrCreateStudentQuestion(mutation.addedNodes[0]);
+      let stuQue = reloadOrCreateStudentQuestion(mutation.addedNodes[0]);
+      addUnrespondedObserverToChatNode(stuQue.chatNode)
     }
   });    
 });
@@ -61,10 +63,35 @@ var chatNodeObserver = new MutationObserver(function(mutations) {
 var unrespondedObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if(mutation.addedNodes[0] || mutation.removedNodes[0]){
-      console.log(mutation)
+      console.log(mutation);
+      let chatNode = getChatNodeFromUnrespondedObserver(mutation.target);
+      let chatId = parseInt(getChatIdFromChatNode(chatNode));
+      let studentQuestion = findStudentQuestionByChatId(chatId)
+      studentQuesion.chatNode = chatNode;
+      let tab = findTab(chatId);
+      checkChatStatus(studentQuestion, tab);
     }
   });    
 });
+
+function addUnrespondedObserverToChatNode(chatNode){
+  targetElem = chatNode.querySelector('.image-frame--fixed-size-large');
+  config = { attributes: true, childList: true, characterData: true };
+  unrespondedObserver.observe(targetElem, config)
+}
+
+
+function getChatNodeFromUnrespondedObserver(targetNode){
+  return targetNode.parentNode.parentNode.parentNode.parentNode
+}
+
+function getChatIdFromChatNode(chatNode){
+  return chatNode.querySelector('.tracker').dataset.chatid 
+}
+
+function getTabFromChatId(chatId){
+  return document.querySelector('#chat_' + chatId + '_tab');
+}
 
 // When the unresponded observer triggers, check for matching tab.
 // If matching tab exists, change it's unresponded status
@@ -79,19 +106,27 @@ function reloadTracker(chatNode, studentQuestion){
 
 function reloadOrCreateStudentQuestion(chatNode){
   let question = chatNode.querySelector('.util--break-word').textContent;
-  let student = chatNode.querySelector('.heading--level-4').textContent;
+  let studentName = chatNode.querySelector('.heading--level-4').textContent;
   let found = false;
+  let student = '';
   allStudentQuestions.forEach(function(studentQuestion){
-    if (!found && studentQuestion.studentName() === student && studentQuestion.question() === question){
+    if (!found && studentQuestion.studentName() === studentName && studentQuestion.question() === question){
       reloadTracker(chatNode, studentQuestion);
       found = !found;
+      student = studentQuestion
+      if(findTab(studentQuestion.chatId)){
+        checkChatStatus(studentQuestion, findTab(studentQuestion.chatId))
+      }
     }
   });
   if (!found){
-    createStudentQuestion(chatNode);
-    trackStudent(studentQuestion.chatNode);
+    student = createStudentQuestion(chatNode);
+    trackStudent(student.chatNode);
   }
+  return student;
 }
+
+
 
 // Tabs
 function createTabBar(){
@@ -106,7 +141,18 @@ function createTab(studentQuestion){
   let chatTab = '<div class="chat-tab" id="chat_' + studentQuestion.chatId +'_tab" data-chatId="' + studentQuestion.chatId +'">'+ studentQuestion.studentName();
   chatTab += ' <span class="close-tab">X</span></div>';
   document.querySelector('#chat-tab-bar').innerHTML += chatTab;
-  attachTabListener(document.querySelectorAll('#chat-tab-bar > .chat-tab'));
+  let tabs = document.querySelectorAll('#chat-tab-bar > .chat-tab')
+  let tabElement = document.querySelector('#chat-tab-bar').lastChild;
+  attachTabListener(tabs);
+  checkChatStatus(studentQuestion, tabElement);
+}
+
+function checkChatStatus(studentQuestion, tab){
+  if (studentQuestion.chatNode.querySelector('.image-frame__badge--color-blue')) {
+    tab.classList.add('unresponded');
+  } else {
+    tab.classList.remove('unresponded');
+  }
 }
 
 function findStudentQuestionByChatId(chatId){
@@ -122,6 +168,10 @@ function findStudentQuestionByChatId(chatId){
 function toggleUnresponded(tab){
   tab.classList.toggle('unresponded')
 } 
+
+function findTab(chatId){
+  return document.querySelector('#chat_' + chatId + '_tab')
+}
 
 // Event Listeners
 
@@ -152,6 +202,12 @@ function attachTrackStudentListeners(){
   });
 }
 
+function attachTrackUnrespondedObservers(){
+  allStudentQuestions.forEach(function(studentQuestion){
+    addUnrespondedObserverToChatNode(studentQuestion.chatNode)
+  });
+}
+
 function trackStudent(studentNode){
  studentNode.querySelector('.tracker').addEventListener('click', function(e){
   let chatId = parseInt(e.srcElement.dataset.chatid);
@@ -172,6 +228,7 @@ var foo = document.querySelector('.list--last-child-border');
 var config = { attributes: true, childList: true, characterData: true };
 chatNodeObserver.observe(foo, config);
 attachTrackStudentListeners();
+attachTrackUnrespondedObservers();
 
 
 // Every Student should have a "Track Chat" buttton added to the sidebar
@@ -200,7 +257,7 @@ chatNodes[0].querySelector('.heading--level-4').textContent //grabs name
 
 chatNodes[0].querySelector('.media-block__media').innerHtml += '<div>Track Me</div>'; //adds button
 
-chatNodes[0].querySelector('image-frame__badge--color-blue') // gets unanswered response number if present
+chatNodes[0].querySelector('.image-frame__badge--color-blue') // gets unanswered response number if present
 
 // Tab Functions 
 
