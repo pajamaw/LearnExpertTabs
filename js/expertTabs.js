@@ -63,11 +63,10 @@ var chatNodeObserver = new MutationObserver(function(mutations) {
 var unrespondedObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if(mutation.addedNodes[0] || mutation.removedNodes[0]){
-      console.log(mutation);
       let chatNode = getChatNodeFromUnrespondedObserver(mutation.target);
       let chatId = parseInt(getChatIdFromChatNode(chatNode));
       let studentQuestion = findStudentQuestionByChatId(chatId)
-      studentQuesion.chatNode = chatNode;
+      studentQuestion.chatNode = chatNode;
       let tab = findTab(chatId);
       checkChatStatus(studentQuestion, tab);
     }
